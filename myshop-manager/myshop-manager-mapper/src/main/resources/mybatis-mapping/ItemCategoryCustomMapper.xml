@@ -55,7 +55,7 @@
   	select count(1) from shop_item_category 
   	where name_=#{name}
   	<if test="categoryId!=null">
-		and id!=#{categoryId}
+		and id_!=#{categoryId}
 	</if>
   </select>
 </mapper>

@@ -42,6 +42,10 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
 			<version>10.12.1.1</version>
@@ -83,9 +87,9 @@
 			<properties>
 				<mvn.dubbo.registry.center>127.0.0.1:2181</mvn.dubbo.registry.center>
 				<mvn.dubbo.protocol.port>20884</mvn.dubbo.protocol.port>
-				<mvn.db.url>jdbc:mysql://192.168.201.129:3306/myshop</mvn.db.url>
-				<mvn.db.username>guest</mvn.db.username>
-				<mvn.db.password>!Gue123456</mvn.db.password>
+				<mvn.db.url>jdbc:mysql://${db.host}:${db.port}/myshop?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull</mvn.db.url>
+				<mvn.db.username>${db.username}</mvn.db.username>
+				<mvn.db.password>${db.password}</mvn.db.password>
 				<mvn.db.driver>com.mysql.jdbc.Driver</mvn.db.driver>
 				<mvn.redis.server>127.0.0.1:6379</mvn.redis.server>
 				<mvn.db.validationQuery>SELECT 'x'</mvn.db.validationQuery>

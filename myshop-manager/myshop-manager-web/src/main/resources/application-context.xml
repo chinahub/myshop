@@ -22,6 +22,4 @@
 	</context:component-scan>
 	
 	<import resource="dubbo-consumer.xml"/>
-	<!-- <import resource="spring-shiro.xml"/> -->
-	<import resource="spring-cache.xml"/>
 </beans>

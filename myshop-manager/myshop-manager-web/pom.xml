@@ -51,10 +51,6 @@
 			<artifactId>commons-fileupload</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.baidu</groupId>
-			<artifactId>ueditor</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring</artifactId>
 		</dependency>
@@ -102,17 +98,8 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<mvn.weburl>http://10.95.86.115:8888/cocc</mvn.weburl>
 				<mvn.dubbo.registry.center>127.0.0.1:2181</mvn.dubbo.registry.center>
-				<mvn.ams.registry.center>10.92.1.227:2181</mvn.ams.registry.center>
-				<mvn.api.registry.center>10.92.1.226:2181</mvn.api.registry.center>
-				<mvn.redis.server>10.92.1.200:6379,10.92.1.201:6379</mvn.redis.server>
-				<mvn.logback.appender>STDOUT</mvn.logback.appender>
-				<mvn.wecaht.url>http://10.92.1.200:8080</mvn.wecaht.url>
-				<mvn.wechat.servicePath>/qyfrtwx/cocc/pushMsg.qy</mvn.wechat.servicePath>
-				<mvn.pda.url>http://10.95.68.90:8080</mvn.pda.url>
-				<mvn.pda.appId>TangPda</mvn.pda.appId>
-				<mvn.pda.pwd>123456</mvn.pda.pwd>
+				<mvn.redis.server>127.0.0.1:6379</mvn.redis.server>
 			</properties>
 		</profile>
 	</profiles>

@@ -5,18 +5,6 @@
 	id="myshop" version="3.0">
 	<display-name>myshop_manager-web</display-name>
 
-	<filter>
-		<filter-name>shiroFilter</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-		<init-param>
-			<param-name>targetFilterLifecycle</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>shiroFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
 	<servlet>
 		<servlet-name>springmvc</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -51,6 +39,6 @@
 	</welcome-file-list>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/error/404.html</location>
+		<location>/WEB-INF/pages/error/404.jsp</location>
 	</error-page>
 </web-app>

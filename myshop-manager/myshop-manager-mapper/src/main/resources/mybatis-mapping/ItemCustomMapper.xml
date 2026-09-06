@@ -25,7 +25,6 @@
   </select>
   
   <select id="getCount" resultType="_int" parameterType="map">
-  	select count(1) from shop_item 
-  	LIMIT #{start}, #{length}
+  	select count(1) from shop_item
   </select>
 </mapper>

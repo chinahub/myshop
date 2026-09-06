@@ -24,10 +24,7 @@ public class ItemServiceImpl implements ItemService {
 		ShopQueryResult result = new ShopQueryResult();
 		result.setTotal(count);
 		if (count > 0) {
-			Integer length = (Integer) params.get("length");
-			if (length == -1) {
-				params.put("length", Integer.MAX_VALUE);
-			}
+			PageParams.normalize(params);
 			List<ItemDto> items = itemMapper.listItem(params);
 			result.setList(items);
 		}

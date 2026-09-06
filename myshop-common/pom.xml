@@ -5,6 +5,7 @@
 		<groupId>com.rocket.shop</groupId>
 		<artifactId>myshop-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../myshop-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>myshop-common</artifactId>
 	<dependencies>

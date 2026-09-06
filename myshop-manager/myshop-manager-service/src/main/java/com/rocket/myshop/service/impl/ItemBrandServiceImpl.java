@@ -24,10 +24,7 @@ public class ItemBrandServiceImpl implements ItemBrandService{
 		ShopQueryResult result = new ShopQueryResult();
 		result.setTotal(count);
 		if (count > 0) {
-			Integer length = (Integer) params.get("length");
-			if(length == -1){
-				 params.put("length", Integer.MAX_VALUE);
-			}
+			PageParams.normalize(params);
 			List<ItemBrandDto> data = itemBrandMapper.listItemBrand(params);
 			result.setList(data);
 		}

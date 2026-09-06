@@ -29,10 +29,7 @@ public class ItemCategoryServiceImpl implements ItemCategoryService {
 		ShopQueryResult result = new ShopQueryResult();
 		result.setTotal(count);
 		if (count > 0) {
-			Integer length = (Integer) params.get("length");
-			if(length!=null && length == -1){
-				 params.put("length", Integer.MAX_VALUE);
-			}
+			PageParams.normalize(params);
 			List<ItemCategoryDto> data = itemCategoryMapper.listItemCategory(params);
 			result.setList(data);
 		}
@@ -66,9 +63,16 @@ public class ItemCategoryServiceImpl implements ItemCategoryService {
 			BeanUtils.copyProperties(itemCategory, itemCategoryDto);
 			Integer parentId = itemCategory.getParentId();
 			byte level = 1;
+			ItemCategory itemCategoryParent = parentId==null ? null : itemCategoryMapper.selectByPrimaryKey(parentId);
+			if(parentId!=null && itemCategoryParent==null){
+				result.setSuccess(false);
+				Map<String, Object> reasons = new HashMap<>();
+				reasons.put("parentId", "父商品类别不存在！");
+				result.setReasons(reasons);
+				return result;
+			}
 			if(parentId!=null){
 				//更新父类别中的子类别数目，子类别更新时间
-				ItemCategory itemCategoryParent = itemCategoryMapper.selectByPrimaryKey(parentId);
 				short subCategoryNum = itemCategoryParent.getSubCategoryNum().shortValue();
 				subCategoryNum +=level;
 				itemCategoryParent.setSubCategoryNum(subCategoryNum);
@@ -96,16 +100,26 @@ public class ItemCategoryServiceImpl implements ItemCategoryService {
 	@Override
 	public ShopTxResult deleteItemsCategory(Integer categoryId) {
 		ItemCategory itemCategory = itemCategoryMapper.selectByPrimaryKey(categoryId);
+		if(itemCategory==null){
+			ShopTxResult result = new ShopTxResult();
+			result.setSuccess(false);
+			result.setMessage("商品类别不存在！");
+			result.setVersion("1.0.0");
+			return result;
+		}
 		Integer parentId = itemCategory.getParentId();
 		if(parentId!=null){
 			ItemCategory itemCategoryParent = itemCategoryMapper.selectByPrimaryKey(parentId);
-			itemCategoryParent.setUpdateTime(new Date());
-			Short subCategoryNum = itemCategoryParent.getSubCategoryNum();
-			subCategoryNum--;
-			itemCategoryParent.setSubCategoryNum(subCategoryNum);
-			itemCategoryMapper.updateByPrimaryKey(itemCategoryParent);
+			if(itemCategoryParent!=null){
+				itemCategoryParent.setUpdateTime(new Date());
+				Short subCategoryNum = itemCategoryParent.getSubCategoryNum();
+				subCategoryNum--;
+				itemCategoryParent.setSubCategoryNum(subCategoryNum);
+				itemCategoryMapper.updateByPrimaryKey(itemCategoryParent);
+			}
 		}
 		itemCategory.setStatus(false);
+		itemCategory.setUpdateTime(new Date());
 		int updateCount = itemCategoryMapper.updateByPrimaryKey(itemCategory);
 		ShopTxResult result = new ShopTxResult();
 		result.setMessage("成功删除"+updateCount+"记录");
@@ -127,8 +141,9 @@ public class ItemCategoryServiceImpl implements ItemCategoryService {
 		}else{
 			ItemCategory itemCategory = new ItemCategory();
 			BeanUtils.copyProperties(itemCategory, itemCategoryDto);
-			int updateCount = itemCategoryMapper.updateByPrimaryKey(itemCategory);
-			result.setMessage("成功删除"+updateCount+"记录");
+			itemCategory.setUpdateTime(new Date());
+			int updateCount = itemCategoryMapper.updateByPrimaryKeySelective(itemCategory);
+			result.setMessage("成功更新"+updateCount+"记录");
 			result.setSuccess(true);
 		}
 		return result;

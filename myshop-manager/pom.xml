@@ -5,6 +5,7 @@
 		<groupId>com.rocket.shop</groupId>
 		<artifactId>myshop-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../myshop-parent/pom.xml</relativePath>
 	</parent>
 	<artifactId>myshop-manager</artifactId>
 	<packaging>pom</packaging>
@@ -15,10 +16,7 @@
 		<module>myshop-manager-service-interface</module>
 		<module>myshop-manager-dto</module>
 		<module>myshop-manager-common</module>
-		<module>myshop-manager-service-user</module>
-		<module>myshop-manager-service-order</module>
-		<module>myshop-manager-service-goods</module>
-		<module>myshop-manager-service-sale</module>
+		<module>myshop-manager-service</module>
 	</modules>
 	<dependencies>
 		<dependency>

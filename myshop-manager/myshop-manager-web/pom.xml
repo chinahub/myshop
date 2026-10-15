@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -7,100 +8,50 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>myshop-manager-web</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>com.rocket.shop</groupId>
-			<artifactId>myshop-manager-pojo</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>myshop-manager-service</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.rocket.shop</groupId>
-			<artifactId>myshop-manager-service-interface</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>cn.jiebaba.summer</groupId>
+			<artifactId>summer-boot</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.rocket.shop</groupId>
-			<artifactId>myshop-manager-dto</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.rocket.shop</groupId>
-			<artifactId>myshop-manager-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-oxm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>jstl</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-ehcache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>myshop-manager</finalName>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.2.19.v20160908</version>
-				<configuration>
-					<webAppConfig>
-						<contextPath>/</contextPath>
-						<!--使得jetty支持动态修改静态资源而不重启服务器 -->
-						<defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
-					</webAppConfig>
-				</configuration>
+				<groupId>cn.jiebaba.summer</groupId>
+				<artifactId>summer-pack-maven-plugin</artifactId>
+				<version>${summer.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<startClass>com.rocket.myshop.ManagerApplication</startClass>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-	<profiles>
-		<profile>
-			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<mvn.dubbo.registry.center>127.0.0.1:2181</mvn.dubbo.registry.center>
-				<mvn.redis.server>127.0.0.1:6379</mvn.redis.server>
-			</properties>
-		</profile>
-	</profiles>
 </project>

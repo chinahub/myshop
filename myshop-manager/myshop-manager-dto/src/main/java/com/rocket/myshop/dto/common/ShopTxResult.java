@@ -2,42 +2,61 @@ package com.rocket.myshop.dto.common;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
-* @FullClassName com.rocket.myshop.dto.common.ShopTxResult
-* @Description: 针对增删改带有事务的操作统一返回数据格式
-* @author  Liu Jie
-* @date 2016年12月12日 下午9:59:03 
-* @version V1.0.0
+* @Description: 针对增删改带有事务的操作统一返回数据格式。
+* 校验失败信息（violations）由全局异常处理器统一输出，此处仅承载业务结果。
  */
-@Data
-@NoArgsConstructor
-public class ShopTxResult implements Serializable{
-	
+public class ShopTxResult implements Serializable {
+
 	private static final long serialVersionUID = 713192640075470698L;
 
 	private String message = "操作失败！";
-	
+
 	private Map<String, Object> reasons = new HashMap<>();
-	
+
 	private String version;
-	
+
 	private boolean success;
-	
-	public ShopTxResult(BindingResult errors){
-		List<FieldError> fieldErrors = errors.getFieldErrors();
-		for (FieldError fieldError : fieldErrors) {
-			getReasons().put(fieldError.getField(), fieldError.getDefaultMessage());
-		}
-		this.success = false;
-		this.version="1.0.0";
+
+	public ShopTxResult() {
+	}
+
+	public ShopTxResult(String message, boolean success) {
+		this.message = message;
+		this.success = success;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Map<String, Object> getReasons() {
+		return reasons;
+	}
+
+	public void setReasons(Map<String, Object> reasons) {
+		this.reasons = reasons;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 }

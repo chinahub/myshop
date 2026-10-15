@@ -20,3 +20,13 @@ target/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Summer 运行日志与工具状态
+logs/
+.mimosa/
+
+# 前端工程
+node_modules/
+myshop-ui/dist/
+# 前端构建产物同步到后端的副本（由 npm run sync 生成）
+myshop-manager/myshop-manager-web/src/main/resources/static/

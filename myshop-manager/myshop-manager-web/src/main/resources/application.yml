@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+summer:
+  datasource:
+    # 默认连本机 MySQL（WSL Docker 部署，见 D:\WSL\MySQL8-Docker部署记录.md）。
+    # Summer 不支持 ${VAR:default} 占位符；需要覆盖时用松弛映射环境变量：
+    # SUMMER_DATASOURCE_URL / SUMMER_DATASOURCE_USERNAME / SUMMER_DATASOURCE_PASSWORD
+    url: jdbc:mysql://localhost:3306/myshop?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    pool-size: 8
+
+logging:
+  level:
+    root: INFO

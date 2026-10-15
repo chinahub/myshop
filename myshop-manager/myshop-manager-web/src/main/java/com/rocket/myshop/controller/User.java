@@ -1,37 +1,40 @@
 package com.rocket.myshop.controller;
 
-import javax.validation.constraints.NotNull;
+import cn.jiebaba.summer.web.validation.NotNull;
+import cn.jiebaba.summer.web.validation.Size;
 
-import org.hibernate.validator.constraints.Length;
-
-
+/**
+ * 用户演示表单 bean（Summer 校验注解）。
+ */
 public class User {
 
-	@NotNull
-    private String name;
-	@Length(max=6)
-    private String username;
+	@NotNull(message = "name 不能为空")
+	private String name;
 
-    public User(){}
+	@Size(max = 6, message = "用户名最长 6 个字符")
+	private String username;
 
-    public User(String name, String username) {
-        this.username = username;
-        this.name = name;
-    }
+	public User() {
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public User(String name, String username) {
+		this.username = username;
+		this.name = name;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

@@ -2,139 +2,119 @@ package com.rocket.myshop.controller;
 
 import java.util.Map;
 
-import javax.validation.Valid;
-
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.rocket.myshop.domain.Item;
 import com.rocket.myshop.domain.ItemBrand;
 import com.rocket.myshop.dto.ItemCategoryDto;
 import com.rocket.myshop.dto.common.ShopQueryResult;
 import com.rocket.myshop.dto.common.ShopTxResult;
-import com.rocket.myshop.dto.validattion.FirstValid;
 import com.rocket.myshop.service.ItemBrandService;
 import com.rocket.myshop.service.ItemCategoryService;
 import com.rocket.myshop.service.ItemService;
 
+import cn.jiebaba.summer.core.annotation.Autowired;
+import cn.jiebaba.summer.web.annotation.GetMapping;
+import cn.jiebaba.summer.web.annotation.PostMapping;
+import cn.jiebaba.summer.web.annotation.RequestBody;
+import cn.jiebaba.summer.web.annotation.RequestMapping;
+import cn.jiebaba.summer.web.annotation.RequestParam;
+import cn.jiebaba.summer.web.annotation.RestController;
+import cn.jiebaba.summer.web.validation.Valid;
+
 /**
-* @FullClassName com.rocket.myshop.controller.ItemController
-* @Description: SKU商品管理
-* @author  Liu Jie
-* @date 2016年12月7日 下午2:45:27 
-* @version V1.0.0
+* @Description: SKU商品管理 REST 接口
  */
 @RestController
-@RequestMapping(value = "/items")
+@RequestMapping("/items")
 public class ItemController {
 
-	@Reference
+	@Autowired
 	ItemService itemService;
-	
-	@Reference
+
+	@Autowired
 	ItemCategoryService itemCategoryService;
-	
-	@Reference
+
+	@Autowired
 	ItemBrandService itemBrandService;
-	
+
 	//------------------------- 商品----------------------------------------
-	
-	@RequestMapping(value = "/listItem.json", method = RequestMethod.POST)
+
+	@PostMapping("/listItem.json")
 	public ShopQueryResult listItem(@RequestBody Map<String, Object> params) {
 		ShopQueryResult result = itemService.listItem(params);
 		result.setSuccess(true);
 		return result;
 	}
-	
-	@RequestMapping(value = "/deleteItem", method = RequestMethod.POST)
-	public Object deleteItem(@Valid Item input){
-		return null;
-	} 
-	
-	@RequestMapping(value = "/updateItem", method = RequestMethod.POST)
-	public Object updateItem(@Valid Item input){
-		return null;
+
+	@GetMapping("/detail.json")
+	public Item detail(@RequestParam("id") Integer id) {
+		return itemService.getItem(id);
 	}
-	
-	@RequestMapping(value = "/addItem", method = RequestMethod.POST)
-	public Object addItem(@Valid Item input){
-		return null;
+
+	@PostMapping("/deleteItem")
+	public ShopTxResult deleteItem(@RequestParam("id") Integer id) {
+		return itemService.deleteItem(id);
 	}
-	
+
+	@PostMapping("/updateItem")
+	public ShopTxResult updateItem(@RequestBody Item input) {
+		return itemService.updateItem(input);
+	}
+
+	@PostMapping("/addItem")
+	public ShopTxResult addItem(@RequestBody Item input) {
+		return itemService.addItem(input);
+	}
+
 	//------------------------- 商品品牌----------------------------------------
-	
-	@RequestMapping(value = "/listItemsBrand.json", method = RequestMethod.POST)
-	public Object listItemBrand(@RequestBody Map<String, Object> params){
+
+	@PostMapping("/listItemsBrand.json")
+	public Object listItemBrand(@RequestBody Map<String, Object> params) {
 		ShopQueryResult result = itemBrandService.listItemBrands(params);
 		result.setSuccess(true);
 		result.setVersion("1.0.0");
 		return result;
 	}
-	
-	@RequestMapping(value = "/addItemsBrand.json", method = RequestMethod.POST)
-	public Object addItemBrand(@RequestBody ItemBrand itemBrand){
-		
-		return null;
+
+	@PostMapping("/addItemsBrand.json")
+	public ShopTxResult addItemBrand(@RequestBody ItemBrand itemBrand) {
+		return itemBrandService.addItemBrand(itemBrand);
 	}
-	
-	@RequestMapping(value = "/updateItemsBrand.json", method = RequestMethod.POST)
-	public Object updateItemsBrand(@RequestBody ItemBrand itemBrand){
-		
-		return null;
+
+	@PostMapping("/updateItemsBrand.json")
+	public ShopTxResult updateItemsBrand(@RequestBody ItemBrand itemBrand) {
+		return itemBrandService.updateItemBrand(itemBrand);
 	}
-	
-	@RequestMapping(value = "/deleteItemsBrand.json", method = RequestMethod.POST)
-	public Object deleteItemsBrand(@RequestBody ItemBrand itemBrand){
-		
-		return null;
+
+	@PostMapping("/deleteItemsBrand.json")
+	public ShopTxResult deleteItemsBrand(@RequestParam("id") Integer id) {
+		return itemBrandService.deleteItemBrand(id);
 	}
-	
+
 	//------------------------- 商品类别----------------------------------------
-	
-	@RequestMapping(value = "/listItemsCategory.json", method = RequestMethod.POST)
+
+	@PostMapping("/listItemsCategory.json")
 	public Object listItemsCategory(@RequestBody Map<String, Object> params) {
-		ShopQueryResult result = itemCategoryService.listItemCategory(params);
-		return result;
+		return itemCategoryService.listItemCategory(params);
 	}
-	
-	@RequestMapping(value = "/getSubItemsCategory.json", method = RequestMethod.POST)
+
+	@PostMapping("/getSubItemsCategory.json")
 	public Object getSubItemsCategory(@RequestParam Integer parentId) {
-		ShopQueryResult result = itemCategoryService.getSubItemsCategory(parentId);
-		return result;
+		return itemCategoryService.getSubItemsCategory(parentId);
 	}
-	
-	@RequestMapping(value = "/addItemsCategory.json", method = RequestMethod.POST)
-	public Object addItemCategory(@RequestBody @Validated(FirstValid.class) ItemCategoryDto itemCategory, BindingResult errors) throws Exception{
-		ShopTxResult result = null;
-		if(errors.hasErrors()){
-			result = new ShopTxResult(errors);
-			return result;
-		}
-		result = itemCategoryService.addItemsCategory(itemCategory);
-		return result;
+
+	@PostMapping("/addItemsCategory.json")
+	public Object addItemCategory(@RequestBody @Valid ItemCategoryDto itemCategory) throws Exception {
+		return itemCategoryService.addItemsCategory(itemCategory);
 	}
-	
-	@RequestMapping(value = "/updateItemsCategory.json", method = RequestMethod.POST)
-	public Object updateItemsCategory(@RequestBody @Validated(FirstValid.class) ItemCategoryDto itemCategory, BindingResult errors) throws Exception {
-		ShopTxResult result = null;
-		if(errors.hasErrors()){
-			result = new ShopTxResult(errors);
-			return result;
-		}
-		result = itemCategoryService.updateItemsCategory(itemCategory);
-		return result;
-	} 
-	
-	@RequestMapping(value = "/deleteItemsCategory.json", method = RequestMethod.POST)
-	public Object deleteItemsCategory(@RequestParam Integer categoryId){
-		ShopTxResult result = itemCategoryService.deleteItemsCategory(categoryId);
-		return result;
-	} 
-	
+
+	@PostMapping("/updateItemsCategory.json")
+	public Object updateItemsCategory(@RequestBody @Valid ItemCategoryDto itemCategory) throws Exception {
+		return itemCategoryService.updateItemsCategory(itemCategory);
+	}
+
+	@PostMapping("/deleteItemsCategory.json")
+	public Object deleteItemsCategory(@RequestParam Integer categoryId) {
+		return itemCategoryService.deleteItemsCategory(categoryId);
+	}
+
 }

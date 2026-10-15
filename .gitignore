@@ -10,15 +10,12 @@ target/
 .classpath
 .project
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
 *.ear
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 
 # Summer 运行日志与工具状态
@@ -27,6 +24,9 @@ logs/
 
 # 前端工程
 node_modules/
-myshop-ui/dist/
-# 前端构建产物同步到后端的副本（由 npm run sync 生成）
-myshop-manager/myshop-manager-web/src/main/resources/static/
+myshop-manager-ui/dist/
+myshop-mall-ui/dist/
+
+# 前端构建产物同步到后端的副本（npm run sync 生成）；static 根下手写的门户页 index.html 例外，需纳入版本管理
+myshop-backend/myshop-manager/myshop-manager-web/src/main/resources/static/*
+!myshop-backend/myshop-manager/myshop-manager-web/src/main/resources/static/index.html

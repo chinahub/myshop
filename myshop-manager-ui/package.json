@@ -1,5 +1,5 @@
 {
-  "name": "myshop-ui",
+  "name": "myshop-manager-ui",
   "private": true,
   "version": "1.0.0",
   "description": "myshop 后台管理前端（React + Vite + Ant Design），替代原 JSP 页面",

@@ -56,6 +56,49 @@ CREATE TABLE IF NOT EXISTS demo (
   id_ INT AUTO_INCREMENT PRIMARY KEY,
   name_ VARCHAR(40) DEFAULT NULL
 );
+CREATE TABLE IF NOT EXISTS mall_user (
+  id_ INT AUTO_INCREMENT PRIMARY KEY,
+  username_ VARCHAR(40) NOT NULL,
+  password_ VARCHAR(64) NOT NULL,
+  salt_ VARCHAR(32) NOT NULL,
+  nickname_ VARCHAR(40) DEFAULT NULL,
+  status_ TINYINT(1) NOT NULL DEFAULT 1,
+  create_time_ DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time_ DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS mall_cart (
+  id_ INT AUTO_INCREMENT PRIMARY KEY,
+  user_id_ INT NOT NULL,
+  item_id_ INT NOT NULL,
+  num_ INT NOT NULL DEFAULT 1,
+  create_time_ DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time_ DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS mall_order (
+  id_ INT AUTO_INCREMENT PRIMARY KEY,
+  order_no_ VARCHAR(40) NOT NULL,
+  user_id_ INT NOT NULL,
+  total_amount_ DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  status_ TINYINT(1) NOT NULL DEFAULT 1,
+  consignee_name_ VARCHAR(40) DEFAULT NULL,
+  consignee_phone_ VARCHAR(20) DEFAULT NULL,
+  consignee_address_ VARCHAR(200) DEFAULT NULL,
+  create_time_ DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time_ DATETIME DEFAULT CURRENT_TIMESTAMP,
+  pay_time_ DATETIME DEFAULT NULL
+);
+CREATE TABLE IF NOT EXISTS mall_order_item (
+  id_ INT AUTO_INCREMENT PRIMARY KEY,
+  order_id_ INT NOT NULL,
+  item_id_ INT NOT NULL,
+  item_title_ VARCHAR(100) NOT NULL,
+  item_img_ VARCHAR(500) DEFAULT NULL,
+  item_price_ DECIMAL(10,2) NOT NULL,
+  num_ INT NOT NULL,
+  subtotal_ DECIMAL(10,2) NOT NULL
+);
+-- mall_* 是商城运行时数据（会员/购物车/订单），不是种子表：
+-- 本脚本在每个新连接上重跑，故只建表不删数，避免会话中途数据被清空。
 -- 连接池每个新连接都会执行一次本脚本（INIT=RUNSCRIPT），种子数据先删后插保证幂等。
 DELETE FROM demo;
 DELETE FROM shop_item;

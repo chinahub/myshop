@@ -196,6 +196,130 @@ class ManagerSmokeTest {
 	}
 
 	/**
+	 * 商城链路回归：注册 -> 登录 -> 加购（库存校验）-> 提交订单（扣库存）-> 模拟支付
+	 * -> 已付款订单不可取消 -> 第二笔订单取消回补库存。全程带 X-Mall-Token。
+	 */
+	@Test
+	void mallShoppingRoundtripShouldWork() throws Exception {
+		HttpResponse<String> regResp = postJson("/mall/auth/register",
+				"{\"username\":\"smokeuser\",\"password\":\"123456\",\"nickname\":\"冒烟用户\"}");
+		assertEquals(200, regResp.statusCode());
+		assertTrue(regResp.body().contains("\"token\""), regResp.body());
+		String token = extractJsonString(regResp.body(), "token");
+
+		HttpResponse<String> dupResp = postJson("/mall/auth/register",
+				"{\"username\":\"smokeuser\",\"password\":\"123456\"}");
+		assertEquals(401, dupResp.statusCode());
+		assertTrue(dupResp.body().contains("用户名已被注册"), dupResp.body());
+
+		HttpResponse<String> loginResp = postJson("/mall/auth/login",
+				"{\"username\":\"smokeuser\",\"password\":\"123456\"}");
+		assertEquals(200, loginResp.statusCode());
+		assertTrue(loginResp.body().contains("冒烟用户"), loginResp.body());
+		String wrongResp = postJson("/mall/auth/login", "{\"username\":\"smokeuser\",\"password\":\"wrong!\"}")
+				.body();
+		assertTrue(wrongResp.contains("用户名或密码不正确"), wrongResp);
+
+		String cartAuthResp = get("/mall/cart/list.json").body();
+		assertTrue(cartAuthResp.contains("请先登录"), cartAuthResp);
+
+		HttpResponse<String> overStockResp = postWithToken("/mall/cart/add",
+				"{\"itemId\":1,\"num\":11}", token);
+		assertTrue(overStockResp.body().contains("库存不足"), overStockResp.body());
+
+		assertTrue(postWithToken("/mall/cart/add", "{\"itemId\":1,\"num\":2}", token).body()
+				.contains("\"success\":true"));
+		HttpResponse<String> cartListResp = getWithToken("/mall/cart/list.json", token);
+		assertTrue(cartListResp.body().contains("迁移测试商品A"), cartListResp.body());
+		assertTrue(cartListResp.body().contains("\"num\":2"), cartListResp.body());
+
+		HttpResponse<String> orderResp = postWithToken("/mall/orders/create",
+				"{\"consigneeName\":\"张三\",\"consigneePhone\":\"13800000000\",\"consigneeAddress\":\"北京市朝阳区\"}",
+				token);
+		assertEquals(200, orderResp.statusCode());
+		assertTrue(orderResp.body().contains("\"orderNo\":\"MO"), orderResp.body());
+		assertTrue(orderResp.body().contains("\"totalAmount\":198"), orderResp.body());
+		Integer orderId1 = extractJsonNumber(orderResp.body(), "orderId");
+
+		HttpResponse<String> itemAfterResp = get("/mall/items/detail.json?id=1");
+		assertTrue(itemAfterResp.body().contains("\"num\":8"), itemAfterResp.body());
+
+		HttpResponse<String> emptyCartResp = postWithToken("/mall/orders/create",
+				"{\"consigneeName\":\"张三\",\"consigneePhone\":\"13800000000\",\"consigneeAddress\":\"北京市朝阳区\"}",
+				token);
+		assertTrue(emptyCartResp.body().contains("购物车为空"), emptyCartResp.body());
+
+		HttpResponse<String> orderListResp = getWithToken("/mall/orders/list.json?start=0&length=10", token);
+		assertTrue(orderListResp.body().contains("\"total\":1"), orderListResp.body());
+
+		assertTrue(postWithToken("/mall/orders/pay?id=" + orderId1, null, token).body()
+				.contains("\"success\":true"));
+		HttpResponse<String> cancelPaidResp = postWithToken("/mall/orders/cancel?id=" + orderId1, null, token);
+		assertTrue(cancelPaidResp.body().contains("仅待付款订单可以取消"), cancelPaidResp.body());
+
+		assertTrue(postWithToken("/mall/cart/add", "{\"itemId\":2,\"num\":1}", token).body()
+				.contains("\"success\":true"));
+		HttpResponse<String> order2Resp = postWithToken("/mall/orders/create",
+				"{\"consigneeName\":\"李四\",\"consigneePhone\":\"13900000000\",\"consigneeAddress\":\"上海市浦东新区\"}",
+				token);
+		Integer orderId2 = extractJsonNumber(order2Resp.body(), "orderId");
+		HttpResponse<String> cancelResp = postWithToken("/mall/orders/cancel?id=" + orderId2, null, token);
+		assertTrue(cancelResp.body().contains("库存已回补"), cancelResp.body());
+		HttpResponse<String> item2RestockResp = get("/mall/items/detail.json?id=2");
+		assertTrue(item2RestockResp.body().contains("\"num\":5"), item2RestockResp.body());
+
+		HttpResponse<String> logoutResp = postWithToken("/mall/auth/logout", null, token);
+		assertTrue(logoutResp.body().contains("已退出登录"), logoutResp.body());
+		// 已登出的 token 仍在请求头里，但已不在服务端 token 表中
+		String staleTokenResp = getWithToken("/mall/cart/list.json", token).body();
+		assertTrue(staleTokenResp.contains("登录已过期"), staleTokenResp);
+		// 彻底不带 token 则提示先登录
+		String noTokenResp = get("/mall/cart/list.json").body();
+		assertTrue(noTokenResp.contains("请先登录"), noTokenResp);
+	}
+
+	/** 提取 JSON 字符串值（值内不含引号场景，冒烟自用足够）。 */
+	private static String extractJsonString(String json, String key) {
+		int idx = json.indexOf("\"" + key + "\":\"");
+		if (idx < 0) {
+			throw new AssertionError("缺少字段 " + key + "：" + json);
+		}
+		int start = idx + key.length() + 4;
+		return json.substring(start, json.indexOf('"', start));
+	}
+
+	/** 提取 JSON 数字值。 */
+	private static Integer extractJsonNumber(String json, String key) {
+		int idx = json.indexOf("\"" + key + "\":");
+		if (idx < 0) {
+			throw new AssertionError("缺少字段 " + key + "：" + json);
+		}
+		int start = idx + key.length() + 3;
+		int end = start;
+		while (end < json.length() && (Character.isDigit(json.charAt(end)) || json.charAt(end) == '-')) {
+			end++;
+		}
+		return Integer.valueOf(json.substring(start, end));
+	}
+
+	private HttpResponse<String> postWithToken(String path, String json, String token) throws Exception {
+		HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://localhost:" + port + path))
+				.header("X-Mall-Token", token);
+		if (json == null) {
+			builder.POST(HttpRequest.BodyPublishers.noBody());
+		} else {
+			builder.header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(json));
+		}
+		return http.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+	}
+
+	private HttpResponse<String> getWithToken(String path, String token) throws Exception {
+		return http.send(HttpRequest.newBuilder(URI.create("http://localhost:" + port + path))
+				.header("X-Mall-Token", token).GET().build(), HttpResponse.BodyHandlers.ofString());
+	}
+
+	/**
 	 * 初始化 H2 内存库表结构与数据（H2 Regular 模式语法，列名与生产 MySQL 一致）。
 	 */
 	private static void initH2Schema() throws Exception {
@@ -246,6 +370,46 @@ class ManagerSmokeTest {
 					+ " ('测试类别', 1, 1, 0), ('测试子类别', 1, 2, 0)");
 			st.execute("UPDATE shop_item_category SET parent_id_ = (SELECT MIN(id_) FROM shop_item_category WHERE level_ = 1)"
 					+ " WHERE name_ = '测试子类别'");
+			st.execute("CREATE TABLE IF NOT EXISTS mall_user ("
+					+ " id_ INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,"
+					+ " username_ VARCHAR(40) NOT NULL,"
+					+ " password_ VARCHAR(64) NOT NULL,"
+					+ " salt_ VARCHAR(32) NOT NULL,"
+					+ " nickname_ VARCHAR(40),"
+					+ " status_ TINYINT NOT NULL DEFAULT 1,"
+					+ " create_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " update_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " CONSTRAINT uk_mall_user_username UNIQUE (username_))");
+			st.execute("CREATE TABLE IF NOT EXISTS mall_cart ("
+					+ " id_ INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,"
+					+ " user_id_ INT NOT NULL,"
+					+ " item_id_ INT NOT NULL,"
+					+ " num_ INT NOT NULL DEFAULT 1,"
+					+ " create_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " update_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " CONSTRAINT uk_mall_cart_user_item UNIQUE (user_id_, item_id_))");
+			st.execute("CREATE TABLE IF NOT EXISTS mall_order ("
+					+ " id_ INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,"
+					+ " order_no_ VARCHAR(40) NOT NULL,"
+					+ " user_id_ INT NOT NULL,"
+					+ " total_amount_ DECIMAL(10,2) NOT NULL DEFAULT 0,"
+					+ " status_ TINYINT NOT NULL DEFAULT 1,"
+					+ " consignee_name_ VARCHAR(40),"
+					+ " consignee_phone_ VARCHAR(20),"
+					+ " consignee_address_ VARCHAR(200),"
+					+ " create_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " update_time_ TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+					+ " pay_time_ TIMESTAMP,"
+					+ " CONSTRAINT uk_mall_order_no UNIQUE (order_no_))");
+			st.execute("CREATE TABLE IF NOT EXISTS mall_order_item ("
+					+ " id_ INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,"
+					+ " order_id_ INT NOT NULL,"
+					+ " item_id_ INT NOT NULL,"
+					+ " item_title_ VARCHAR(100) NOT NULL,"
+					+ " item_img_ VARCHAR(500),"
+					+ " item_price_ DECIMAL(10,2) NOT NULL,"
+					+ " num_ INT NOT NULL,"
+					+ " subtotal_ DECIMAL(10,2) NOT NULL)");
 		}
 	}
 }

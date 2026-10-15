@@ -1,13 +1,61 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>myshop 后台管理</title>
-    <script type="module" crossorigin src="/assets/index-WyUvZ8Lc.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BNJHfmXh.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>myshop 门户</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: #e2e8f0;
+    }
+    h1 { font-size: 42px; letter-spacing: 2px; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; margin-bottom: 48px; }
+    .cards { display: flex; gap: 32px; flex-wrap: wrap; justify-content: center; }
+    .card {
+      width: 280px;
+      padding: 36px 28px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      text-decoration: none;
+      color: inherit;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .card .icon { font-size: 40px; margin-bottom: 16px; }
+    .card h2 { font-size: 22px; margin-bottom: 10px; }
+    .card h2 span { color: #7dd3fc; }
+    .card p { color: #94a3b8; line-height: 1.7; font-size: 14px; }
+    footer { margin-top: 64px; color: #64748b; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>myshop</h1>
+  <p class="subtitle">Summer 4.1.0 单体应用 · 一个端口同时提供后台管理与商城</p>
+  <div class="cards">
+    <a class="card" href="/mall/">
+      <div class="icon">🛍️</div>
+      <h2>商城 <span>/mall/</span></h2>
+      <p>面向顾客的在线商城：浏览商品、注册登录、购物车、提交订单与模拟支付。</p>
+    </a>
+    <a class="card" href="/admin/">
+      <div class="icon">🛠️</div>
+      <h2>后台管理 <span>/admin/</span></h2>
+      <p>面向运营的管理端：商品、类别、品牌管理，工作台数据概览。</p>
+    </a>
+  </div>
+  <footer>API 基地址 http://localhost:8080 · 管理接口 /items /users · 商城接口 /mall/*</footer>
+</body>
 </html>

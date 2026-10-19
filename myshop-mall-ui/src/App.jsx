@@ -95,7 +95,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        myshop 商城 · Summer 4.1.0 单体应用演示 · 商品与库存数据来自后台管理端
+        myshop 商城 · Summer 单体应用演示 · 商品与库存数据来自后台管理端
       </footer>
     </UserContext.Provider>
   )

@@ -6,7 +6,7 @@
 	<artifactId>myshop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<description>myshop 电商后端：基于 Summer 框架 4.1.0（cn.jiebaba.summer）的单体纯 REST 应用</description>
+	<description>myshop 电商后端：基于 Summer 框架 4.2.0（cn.jiebaba.summer）的单体纯 REST 应用</description>
 	<modules>
 		<module>myshop-common</module>
 		<module>myshop-manager</module>
@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>25</maven.compiler.release>
-		<summer.version>4.1.0</summer.version>
+		<summer.version>4.2.0</summer.version>
 		<mysql-connector.version>9.1.0</mysql-connector.version>
 		<h2.version>2.3.232</h2.version>
 		<junit-jupiter.version>5.12.2</junit-jupiter.version>

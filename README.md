@@ -1,12 +1,12 @@
 # myshop
 
-Java 电商单体应用：**Summer 框架 4.1.0**（`cn.jiebaba.summer`，自研类 Spring Boot 框架）后端 + **两个 React 前端**（后台管理 + 商城），前后端一体部署。完整项目文档见 [docs/](docs/README.md)。
+Java 电商单体应用：**Summer 框架 4.2.0**（`cn.jiebaba.summer`，自研类 Spring Boot 框架）后端 + **两个 React 前端**（后台管理 + 商城），前后端一体部署。完整项目文档见 [docs/](docs/README.md)。
 
 > 2026-10 由 2016 年的 Spring4 XML + MyBatis + Dubbo SOA 架构整体迁移而来。开发约定见 [AGENTS.md](AGENTS.md)。
 
 ## 技术栈
 
-- 后端：Summer 4.1.0（IoC/嵌入式 HTTP/BaseMapper ORM/校验/事务），Java 25，MySQL
+- 后端：Summer 4.2.0（IoC/嵌入式 HTTP/BaseMapper ORM/校验/事务），Java 25，MySQL
 - 前端：React 18 + Vite。后台管理用 Ant Design 5，商城不用组件库（手写电商 CSS），均 HashRouter
 - 无 Spring、无 MyBatis、无 JSP、无 Dubbo/Zookeeper
 
@@ -23,7 +23,7 @@ start.bat              一键启动
 ## 快速开始
 
 ```bash
-# 0. 前置：JDK 25；Summer 4.1.0 已 install 到本地仓库（源码在 E:\summer_workspace）
+# 0. 前置：JDK 25；Summer 4.2.0 已 install 到本地仓库（源码在 E:\summer_workspace）
 #    数据库：MySQL 建库 myshop 并执行 myshop-backend/项目文档/myshop-manager.sql
 
 # 1. 构建后端（含 10 个端到端冒烟测试）

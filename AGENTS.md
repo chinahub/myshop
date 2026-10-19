@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-myshop 是一个 Java 电商单体应用（Apache 2.0 协议）。**2026-10 已完成架构改造**：由 2016 年的 Spring 4 XML + MyBatis + Dubbo SOA 体系，整体迁移到自研 **Summer 框架 4.1.0**（`cn.jiebaba.summer`，源码在 `E:\summer_workspace`，同一作者 chinahub）之上，形成**单体、纯 REST、零 Servlet** 的应用。**2026-10-15 新增商城链路**：会员认证/购物车/订单后端 + myshop-mall-ui 前端。
+myshop 是一个 Java 电商单体应用（Apache 2.0 协议）。**2026-10 已完成架构改造**：由 2016 年的 Spring 4 XML + MyBatis + Dubbo SOA 体系，整体迁移到自研 **Summer 框架 4.2.0**（`cn.jiebaba.summer`，源码在 `E:\summer_workspace`，同一作者 chinahub）之上，形成**单体、纯 REST、零 Servlet** 的应用。**2026-10-15 新增商城链路**：会员认证/购物车/订单后端 + myshop-mall-ui 前端。
 
 ## 工作区结构（monorepo）
 
@@ -19,7 +19,7 @@ docs/                  项目文档（架构/快速开始/接口清单/数据库
 
 ## 技术栈（当前）
 
-- **Summer 4.1.0**（`cn.jiebaba.summer:summer-boot`）：IoC/AOP/嵌入式 HTTP(虚拟线程)/BaseMapper ORM/校验/事务/JUL 日志，零 Servlet、零第三方依赖
+- **Summer 4.2.0**（`cn.jiebaba.summer:summer-boot`）：IoC/AOP/嵌入式 HTTP(虚拟线程)/BaseMapper ORM/校验/事务/JUL 日志，零 Servlet、零第三方依赖
 - **Java 25**（`maven.compiler.release=25`，编译必须带 `-parameters`——已在根 POM 配置，Summer 靠参数名做 @PathVariable/@RequestParam 绑定）
 - MySQL（mysql-connector-j 9.x，运行时）+ H2 2.3.232（仅测试）
 - JUnit 5（端到端冒烟测试）
@@ -29,7 +29,7 @@ docs/                  项目文档（架构/快速开始/接口清单/数据库
 
 > 本机默认 JAVA_HOME 是 JDK 17，**构建前必须切 JDK 25**：
 > `export JAVA_HOME="D:\jdk\jdk-25.0.4" && export PATH="/d/jdk/jdk-25.0.4/bin:$PATH"`
-> Summer 4.1.0 需先在 `E:\summer_workspace` 执行 `mvn -s settings.xml clean install -DskipTests` 装入本地仓库（本机已完成，含 3 个本地 bug 修复）。
+> Summer 4.2.0 需先在 `E:\summer_workspace` 执行 `mvn -s settings.xml clean install -DskipTests` 装入本地仓库（本机已完成，含 3 个本地 bug 修复）。
 
 ```bash
 # 全量构建（含 H2 冒烟测试，10 个用例）
@@ -149,11 +149,11 @@ cd myshop-manager/myshop-manager-web && mvn exec:java -Dexec.mainClass=com.rocke
 4. ItemController 等管理接口的 `@RequestParam` 一律查询串传参（Summer 不读表单体）。
 5. git remote 平时指向 gh-proxy.com 镜像（本机直连 GitHub 超时），push 需临时改回 `https://github.com/chinahub/myshop.git`。
 6. 历史分支 myshop-1.0.0 ~ 2.5.0 是旧架构演进记录；旧架构代码在 master 的 git 历史（迁移前）。
-7. **Summer 框架已在本机源码（E:\summer_workspace）修了 3 个 bug 并重装 4.1.0**（未推上游）：
-   - `Json.isNumeric` 不含 BigDecimal/BigInteger → DECIMAL 绑定失败（summer-core Json.java）
-   - 数值列转 Boolean 走 `Boolean.valueOf("1")`=false → TINYINT 状态字段映射错误（summer-boot SqlExecutor.java）
-   - 自增主键 generated key 是 BigInteger → 回填 Integer 不匹配（summer-boot TableFieldInfo.setValue 增加数字窄化）
-   升级 Summer 版本时若远端未包含这三个修复，需要重新打补丁。
+7. **Summer 4.1.0 时代本机打的 3 个 bug 补丁，自 4.2.0 起已全部正式包含在框架里**（提交 a5c7e5d/f779e5e，2026-10-19 myshop 已升级 4.2.0 验证）：
+   - `Json.isNumeric` 不含 BigDecimal/BigInteger → DECIMAL 绑定失败（summer-core Json.java 的 isNumberType/coerceNumber）
+   - 数值列转 Boolean 走 `Boolean.valueOf("1")`=false → TINYINT 状态字段映射错误（SqlExecutor 数值转布尔"非 0 即 true"）
+   - 自增主键 generated key 是 BigInteger → 回填 Integer 不匹配（TableFieldInfo.setValue 数字窄化）
+   无需再维护本地补丁；另注意 4.2.0 新行为：`@TableId.value()` 参与列名解析且与 `@TableField.value()` 不一致会抛异常（本项目全部 pojo 双标一致，兼容）；应用未启用 `-parameters` 编译时参数绑定会在首请求 fail-fast（本项目根 POM 已启用）。
 8. 商城 token 会话存内存（重启失效），密码 SHA-256 加盐；均为有意保留的玩具级实现（二期可持久化/升级 BCrypt）。
 
 ## 项目文档

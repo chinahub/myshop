@@ -3,6 +3,7 @@ import { Button, Modal, Popconfirm, Space, Table, Tag, message } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import { listItem, deleteItem } from '../api/shop.js'
+import { useDictMap, dictKey } from '../hooks/useDict.js'
 
 const PAGE_SIZE = 10
 
@@ -12,6 +13,7 @@ export default function ItemList() {
   const [total, setTotal] = useState(0)
   const [current, setCurrent] = useState(1)
   const [loading, setLoading] = useState(false)
+  const statusMap = useDictMap('item_status')
 
   const load = async (page = current) => {
     setLoading(true)
@@ -63,7 +65,10 @@ export default function ItemList() {
       title: '状态',
       dataIndex: 'status',
       width: 80,
-      render: (v) => (v === '1' ? <Tag color="green">在售</Tag> : <Tag color="red">下架</Tag>),
+      render: (v) => {
+        const opt = statusMap.get(dictKey(v))
+        return opt ? <Tag color={opt.color || 'default'}>{opt.label}</Tag> : v ?? '-'
+      },
     },
     {
       title: '操作',

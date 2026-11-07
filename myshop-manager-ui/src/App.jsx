@@ -8,12 +8,14 @@ import {
   AppstoreOutlined,
   TagsOutlined,
   SettingOutlined,
+  BookOutlined,
 } from '@ant-design/icons'
 import Dashboard from './pages/Dashboard.jsx'
 import ItemList from './pages/ItemList.jsx'
 import ItemForm from './pages/ItemForm.jsx'
 import ItemCategory from './pages/ItemCategory.jsx'
 import ItemBrand from './pages/ItemBrand.jsx'
+import SysDict from './pages/SysDict.jsx'
 import Placeholder from './pages/Placeholder.jsx'
 
 const { Header, Sider, Content } = Layout
@@ -25,6 +27,7 @@ const MENU_ITEMS = [
   { key: '/categories', icon: <AppstoreOutlined />, label: '商品类别列表' },
   { key: '/brands', icon: <TagsOutlined />, label: '商品品牌管理' },
   { key: '/specs', icon: <SettingOutlined />, label: '商品规格设置' },
+  { key: '/dicts', icon: <BookOutlined />, label: '字典管理' },
 ]
 
 export default function App() {
@@ -76,6 +79,7 @@ export default function App() {
             <Route path="/items/edit/:id" element={<ItemForm />} />
             <Route path="/categories" element={<ItemCategory />} />
             <Route path="/brands" element={<ItemBrand />} />
+            <Route path="/dicts" element={<SysDict />} />
             <Route path="/specs" element={<Placeholder title="商品规格设置" />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

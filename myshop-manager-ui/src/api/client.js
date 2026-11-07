@@ -6,8 +6,13 @@
  * - 业务错误（HTTP 200 但 success=false）：由调用方按返回值处理（展示 reasons）
  */
 export async function request(path, { json, method = 'POST' } = {}) {
-  const options = { method, headers: { 'Content-Type': 'application/json' } }
-  options.body = json === undefined ? '' : JSON.stringify(json)
+  const upper = method.toUpperCase()
+  const options = { method, headers: {} }
+  // GET/HEAD 请求不能携带 body（fetch 规范会直接抛错），仅写请求序列化 JSON
+  if (upper !== 'GET' && upper !== 'HEAD') {
+    options.headers['Content-Type'] = 'application/json'
+    options.body = json === undefined ? '' : JSON.stringify(json)
+  }
   const resp = await fetch(path, options)
   const text = await resp.text()
   let data = null

@@ -14,6 +14,7 @@ export default defineConfig({
       '/users': 'http://localhost:8080',
       '/listDemo': 'http://localhost:8080',
       '/showData': 'http://localhost:8080',
+      '/sysDict': 'http://localhost:8080',
     },
   },
   build: {

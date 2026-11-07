@@ -10,6 +10,7 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/mall': 'http://localhost:8080',
+      '/sysDict': 'http://localhost:8080',
     },
   },
   build: {

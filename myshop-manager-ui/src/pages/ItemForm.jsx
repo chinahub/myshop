@@ -3,6 +3,7 @@ import { Button, Card, Form, Input, InputNumber, Radio, message } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { addItem, updateItem, getItem } from '../api/shop.js'
 import { reasonsText } from '../api/client.js'
+import useDict from '../hooks/useDict.js'
 
 export default function ItemForm() {
   const navigate = useNavigate()
@@ -11,6 +12,7 @@ export default function ItemForm() {
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(false)
+  const statusOptions = useDict('item_status')
 
   useEffect(() => {
     if (!isEdit) return
@@ -86,8 +88,11 @@ export default function ItemForm() {
         </Form.Item>
         <Form.Item label="状态" name="status">
           <Radio.Group>
-            <Radio value="1">在售</Radio>
-            <Radio value="0">下架</Radio>
+            {statusOptions.map((o) => (
+              <Radio key={o.value} value={o.value}>
+                {o.label}
+              </Radio>
+            ))}
           </Radio.Group>
         </Form.Item>
         <Form.Item>

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Routes, Route, Link, NavLink, useNavigate } from 'react-router-dom'
-import { getMe, logout } from './api/mall.js'
+import { getMe, logout, getDictData } from './api/mall.js'
 import { getToken, clearToken } from './api/client.js'
 import Home from './pages/Home.jsx'
 import ItemList from './pages/ItemList.jsx'
@@ -15,12 +15,33 @@ import Register from './pages/Register.jsx'
 const UserContext = createContext({ user: null, setUser: () => {} })
 export const useUser = () => useContext(UserContext)
 
-const STATUS_META = {
+// 订单状态映射：内置一份作保底（字典接口失败时兜底），App 启动后用 sys_dict_data 覆盖
+let STATUS_META = {
   1: { text: '待付款', cls: 'st-unpaid' },
   2: { text: '已付款', cls: 'st-paid' },
   3: { text: '已取消', cls: 'st-cancelled' },
 }
-export const orderStatus = (status) => STATUS_META[status] || { text: '未知', cls: '' }
+export const orderStatus = (status) => STATUS_META[String(status)] || { text: '未知', cls: '' }
+
+/** 拉取 order_status 字典覆盖保底映射；label 取文案，cls 优先用 extra.cls，缺省沿用保底样式 */
+async function applyOrderStatusDict() {
+  const list = await getDictData('order_status')
+  if (!Array.isArray(list) || list.length === 0) return
+  const next = {}
+  for (const item of list) {
+    let cls = ''
+    try {
+      cls = item.extra ? JSON.parse(item.extra)?.cls || '' : ''
+    } catch {
+      cls = ''
+    }
+    next[String(item.value)] = {
+      text: item.label,
+      cls: cls || STATUS_META[String(item.value)]?.cls || '',
+    }
+  }
+  STATUS_META = next
+}
 
 export function formatPrice(value) {
   const num = Number(value ?? 0)
@@ -29,6 +50,7 @@ export function formatPrice(value) {
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [, setDictVersion] = useState(0)
   const navigate = useNavigate()
 
   // 已存 token 时恢复登录态（token 失效时 client.js 已清 token，此处静默失败即可）
@@ -37,6 +59,15 @@ export default function App() {
     getMe()
       .then((me) => setUser({ userId: me.userId, username: me.username, nickname: me.nickname }))
       .catch(() => setUser(null))
+  }, [])
+
+  // 订单状态文案改由字典驱动；成功后 bump 一次 state 让已挂载的订单页重渲染
+  useEffect(() => {
+    applyOrderStatusDict()
+      .then(() => setDictVersion((v) => v + 1))
+      .catch(() => {
+        // 字典不可用时沿用内置保底映射
+      })
   }, [])
 
   const onLogout = async () => {

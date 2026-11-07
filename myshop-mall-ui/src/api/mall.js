@@ -60,3 +60,12 @@ export const payOrder = (id) =>
 
 export const cancelOrder = (id) =>
   request(`/mall/orders/cancel?id=${encodeURIComponent(id)}`, { json: null })
+
+// ---------------- 字典 ----------------
+
+// 订单状态等枚举文案由后台字典驱动（sys_dict_data），失败时前端用内置保底映射
+export const getDictData = (dictType) =>
+  request(`/sysDict/data/enabled.json?dictType=${encodeURIComponent(dictType)}`, {
+    method: 'GET',
+    json: null,
+  })

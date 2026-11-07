@@ -135,3 +135,31 @@ CREATE TABLE `mall_order_item` (
   PRIMARY KEY (`id_`),
   KEY `idx_mall_order_item_order` (`order_id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单明细';
+
+#DROP TABLE sys_dict;
+CREATE TABLE `sys_dict` (
+  `id_` int(11) NOT NULL AUTO_INCREMENT COMMENT '字典类型ID',
+  `dict_type_` varchar(50) NOT NULL COMMENT '字典类型编码，如 item_status',
+  `dict_name_` varchar(50) NOT NULL COMMENT '字典名称，如 商品状态',
+  `remark_` varchar(200) DEFAULT NULL COMMENT '备注',
+  `status_` tinyint NOT NULL DEFAULT '1' COMMENT '状态，1启用 0停用（tinyInt1isBit 陷阱：Integer 字段禁用 tinyint(1)）',
+  `create_time_` datetime DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
+  `update_time_` datetime DEFAULT CURRENT_TIMESTAMP() COMMENT '更新时间',
+  PRIMARY KEY (`id_`),
+  UNIQUE KEY `uk_sys_dict_type` (`dict_type_`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统字典类型';
+
+#DROP TABLE sys_dict_data;
+CREATE TABLE `sys_dict_data` (
+  `id_` int(11) NOT NULL AUTO_INCREMENT COMMENT '字典数据ID',
+  `dict_type_` varchar(50) NOT NULL COMMENT '所属字典类型编码（sys_dict.dict_type_）',
+  `value_` varchar(50) NOT NULL COMMENT '字典值（统一存字符串，前端按需转换比较）',
+  `label_` varchar(100) NOT NULL COMMENT '字典标签（显示文案）',
+  `sort_` int(11) NOT NULL DEFAULT '0' COMMENT '排序，小在前',
+  `extra_` varchar(200) DEFAULT NULL COMMENT '扩展信息（JSON，如 {"color":"green"} 存 Tag 颜色）',
+  `status_` tinyint NOT NULL DEFAULT '1' COMMENT '状态，1启用 0停用',
+  `create_time_` datetime DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
+  `update_time_` datetime DEFAULT CURRENT_TIMESTAMP() COMMENT '更新时间',
+  PRIMARY KEY (`id_`),
+  UNIQUE KEY `uk_sys_dict_data_type_value` (`dict_type_`,`value_`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统字典数据';

@@ -32,7 +32,7 @@ docs/                  项目文档（架构/快速开始/接口清单/数据库
 > Summer 4.2.0 需先在 `E:\summer_workspace` 执行 `mvn -s settings.xml clean install -DskipTests` 装入本地仓库（本机已完成，含 3 个本地 bug 修复）。
 
 ```bash
-# 全量构建（含 H2 冒烟测试，10 个用例）
+# 全量构建（含 H2 冒烟测试，12 个用例）
 mvn clean install
 
 # 只跑冒烟测试
@@ -40,7 +40,7 @@ mvn test -pl myshop-manager/myshop-manager-web
 
 # 本地运行（一体化 jar：门户/ /admin/ /mall/ + API）
 java -jar myshop-manager/myshop-manager-web/target/myshop-manager-boot.jar
-# 端口 8080；数据源配置见 src/main/resources/application.yml，
+# 端口 8080；本机 80xx 段常被其他项目占用，换端口加 -Dserver.port=9081；数据源配置见 src/main/resources/application.yml，
 # 可用环境变量覆盖：SUMMER_DATASOURCE_URL / _USERNAME / _PASSWORD（松弛映射）
 ```
 
@@ -122,9 +122,10 @@ npm run sync                  # 构建 + dist 同步到 static/mall
 - 建表脚本：`项目文档/myshop-manager.sql`（MySQL，InnoDB/utf8，列名尾下划线；含 mall 4 表）
 - 后台表：shop_item / shop_item_brand / shop_item_category / shop_menu / shop_user / demo
 - 商城表：**mall_user**（会员，SHA-256 加盐）/ **mall_cart**（user+item 唯一）/ **mall_order**（状态 1待付款 2已付款 3已取消，收货快照）/ **mall_order_item**（标题/图/单价/数量下单快照）
+- 字典表（2026-11-07）：**sys_dict**（类型，dict_type_ 唯一）/ **sys_dict_data**（数据，(dict_type_,value_) 唯一；value 统一存字符串，extra_ 存 JSON：color=后台 Tag 色、cls=商城样式类）。前端下拉/状态枚举统一走 `GET /sysDict/data/enabled.json?dictType=`，后台管理页 `/admin/#/dicts`；商城订单状态带内置保底映射。status_ 用 TINYINT 非 tinyint(1)
 - 冒烟测试用 H2 Regular 模式内存库（测试内联 `initH2Schema`；**改表结构三处同步**：myshop-manager.sql、dev/h2-init.sql、测试 initH2Schema）
 - 本地无 MySQL 联调：`dev/h2-init.sql`（H2 MySQL 模式；mall 表只建表不删数据——每新连接都重跑脚本）
-- 种子：`dev/mall-seed.sql`（幂等建表+图文匹配的 22 商品/9 类别/5 品牌，WSL 导入命令见 docs）
+- 种子：`dev/mall-seed.sql`（幂等建表+图文匹配的 22 商品/9 类别/5 品牌，WSL 导入命令见 docs）、`dev/sys-dict-seed.sql`（幂等，3 字典类型+7 条数据）
 
 ## 本地一键验证（无 MySQL）
 

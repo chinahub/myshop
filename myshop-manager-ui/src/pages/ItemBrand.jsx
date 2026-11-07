@@ -18,6 +18,7 @@ import {
   deleteItemBrand,
 } from '../api/shop.js'
 import { reasonsText } from '../api/client.js'
+import { useDictMap, dictKey } from '../hooks/useDict.js'
 
 const PAGE_SIZE = 10
 
@@ -30,6 +31,7 @@ export default function ItemBrand() {
   const [queryName, setQueryName] = useState('')
   const [modal, setModal] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const statusMap = useDictMap('brand_status')
 
   const load = async (pageNum = 1) => {
     setLoading(true)
@@ -111,7 +113,10 @@ export default function ItemBrand() {
       title: '状态',
       dataIndex: 'status',
       width: 80,
-      render: (v) => (v ? <Tag color="green">正常</Tag> : <Tag color="red">删除</Tag>),
+      render: (v) => {
+        const opt = statusMap.get(dictKey(v))
+        return opt ? <Tag color={opt.color || 'default'}>{opt.label}</Tag> : v ?? '-'
+      },
     },
     {
       title: '创建时间',
